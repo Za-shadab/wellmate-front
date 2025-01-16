@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, StackActions } from '@react-navigation/native';
 import  RootParamList  from './types';
 import {Silderdata} from './data';
-// import readSampleData from '../hooks/usehealthdata';
 import { date } from 'yup';
 
 
@@ -15,8 +14,6 @@ import { date } from 'yup';
 
 const Onboard = () => {
 
-    // const hdata = readSampleData();
-    // console.log(hdata);
 
     const[isLoggedIn, setisLoggedIn] = useState<string | null>(null)
     const navigation = useNavigation();
@@ -36,8 +33,8 @@ const Onboard = () => {
         if(isLoggedIn !== null && navigation){
             if(isLoggedIn === 'true'){
                 console.log("Inside Loggein");
-                navigation.dispatch(StackActions.replace('(tabs)'))
-                // navigation.dispatch(StackActions.replace("(onboard)"))
+                // navigation.dispatch(StackActions.replace('(tabs)'))
+                navigation.dispatch(StackActions.replace('(sliders)'))
             }
         }
     },[isLoggedIn])
@@ -60,7 +57,8 @@ const Onboard = () => {
 
     return(
         <View style={styles.container}>
-            <Animated.FlatList
+            <Text>Hello</Text>
+            {/* <Animated.FlatList
                 data={Silderdata}
                 renderItem={({item})=>{
                         return(
@@ -71,24 +69,24 @@ const Onboard = () => {
                 horizontal
                 snapToInterval={Dimensions.get('window').width}
                 decelerationRate='normal'
-            />
+            /> */}
+            {/* <ImageSlider imagesource={require("../../assets/images/Frame (4).png")}/>
 
             <Animated.View 
-            entering={BounceInUp.delay(100).duration(1000)}
             style={styles.shapeone}>
-                <Text style={styles.weltxt}>Welcome</Text>
-                <Text style={styles.txt}>Your Personalized Wellness Companion along your journey</Text>
+                <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Welcome</Animated.Text>
+                <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
             </Animated.View>
 
 
-            <Link href={'/(auth)'} asChild>
+            <Link href={'/health'} asChild>
                 <Pressable>
-                    <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Let's Start</Text>
-                    </View>
+                    <Animated.View style={styles.titleContainer} entering={FadeInDown.delay(200).duration(2000)}>
+                    <Animated.Text style={styles.title}>Let's Start</Animated.Text>
+                    </Animated.View>
                     <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
                 </Pressable>
-            </Link>
+            </Link> */}
         </View>
     )
 }
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
         alignItems:'center'    
     },
     img:{
-        width:'50%',
+        height:'80%',
         aspectRatio:1,
         resizeMode:'cover'
     },

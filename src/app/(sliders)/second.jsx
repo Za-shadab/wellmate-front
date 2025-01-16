@@ -2,20 +2,19 @@ import React,{useState, useEffect} from 'react';
 import { View, Text, StyleSheet, Pressable, Image, Platform, FlatList,Dimensions} from 'react-native';
 import {Link, Redirect} from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
-import Animated, { FadeInDown, BounceOut, BounceInUp,} from 'react-native-reanimated';
-import { useNavigation, StackActions } from '@react-navigation/native';
-import {Silderdata} from './data';
+import Animated, { BounceOut, BounceInUp, BounceInRight} from 'react-native-reanimated';
 
 
 
 
-const HealthInfo = () => {
+
+const SecondScreen = () => {
 
     function ImageSlider({ imagesource }){
         return(
             <Animated.View style={styles.imageContainer}>
             <Animated.Image
-            entering={BounceInUp.duration(2000)}
+            entering={BounceInRight.duration(2000)}
             style={styles.img}
             source={imagesource}
         />
@@ -25,30 +24,18 @@ const HealthInfo = () => {
 
     return(
         <View style={styles.container}>
-            {/* <Animated.FlatList
-                data={Silderdata}
-                renderItem={({item})=>{
-                        return(
-                            <ImageSlider imagesource={item.img}/>
-                        )
-                }}
-                keyExtractor={(item)=> item.id.toString()}
-                horizontal
-                snapToInterval={Dimensions.get('window').width}
-                decelerationRate='normal'
-            /> */}
-            <ImageSlider imagesource={require("../../assets/images/Frame (1).png")}/>
+            <ImageSlider imagesource={require("../../../assets/images/Frame (1).png")}/>
 
             <Animated.View 
             style={styles.shapeone}>
-                <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Welcome</Animated.Text>
-                <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
+                <Animated.Text style={styles.weltxt} entering={BounceInRight.delay(100).duration(2000)}>Welcome</Animated.Text>
+                <Animated.Text style={styles.txt} entering={BounceInRight.delay(200).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
             </Animated.View>
 
 
             <Link href={'(auth)'} asChild>
                 <Pressable>
-                    <Animated.View style={styles.titleContainer} entering={FadeInDown.delay(200).duration(2000)}>
+                    <Animated.View style={styles.titleContainer} entering={BounceInRight.delay(300).duration(2000)}>
                     <Animated.Text style={styles.title}>Let's Start</Animated.Text>
                     </Animated.View>
                     <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
@@ -59,7 +46,7 @@ const HealthInfo = () => {
 }
 
 
-export default HealthInfo;
+export default SecondScreen;
 
 const styles = StyleSheet.create({
     container:{

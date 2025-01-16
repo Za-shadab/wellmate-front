@@ -1,35 +1,95 @@
 import { useState } from 'react';
-import { Button, Image, View, StyleSheet, Pressable, Text } from 'react-native';
+import { Image, View, StyleSheet, Pressable, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
+import { useRegistrationContext } from '../context/RegistrationContext';
+import { useNavigation } from 'expo-router';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
+  const {registrationData, updateRegistrationData} = useRegistrationContext({});
+  const navigation = useNavigation();
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+    console.log('Button Pressed'); // Check if the function is being called
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.mediaTypes.Image,
+      mediaTypes: ['videos','images'],
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
+      // base64: true,
     });
-
-    console.log(result);
-
+  
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+
+      updateRegistrationData('profileUrl', result.assets[0].uri)
+      console.log(image);
+      console.log(registrationData.dietType);
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: result.assets[0].uri,
+        type: result.assets[0].uri.endsWith('.png') ? 'image/png' : 'image/jpeg',  // Dynamically set type
+        name: `profile_image.${result.assets[0].uri.split('.').pop()}`,  // Customize the name as per your need
+      });
+  
+      console.log(formData);
+  
+    (async () => {
+      try{
+        const response = await axios.post('http://192.168.200.148:3000/pfupload/profileUpload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        console.log('Server response is:', response.data);
+      }catch(err){
+        console.log('error sending data',err.message);
+      }
+    })()
+
+    } else {
+      Alert.alert("Image selection was canceled.");
     }
   };
+  const handleFinish = ()=>{
+    console.log("Profile photo update finish");
+    navigation.navigate('(tabs)')
+  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.imgcontainer}>
-      {image && <Image source={{ uri: image }} style={styles.image} />}
+      <Text style={styles.heading}>Profile Picture</Text>
+      <Text style={styles.subHeading}>Choose a photo for your profile</Text>
+
+      <View style={styles.imgContainer}>
+        {image ? (
+          <Image
+            source={{ uri: image }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ) : (
+          <Text style={styles.placeholderText}>No Image Selected</Text>
+        )}
       </View>
-      <Button title="+" onPress={pickImage}/>
-      <Pressable  style={styles.button}>
-        <Text style={styles.btntext}>+</Text>
+
+      <Pressable 
+        style={styles.button} 
+        onPress={pickImage}
+        onPressIn={() => console.log('Button Press In')}
+        onPressOut={() => console.log('Button Press Out')}
+      >
+        <Text style={styles.btnText}>+</Text>
       </Pressable>
+
+      <Text style={styles.instructions}>
+        Tap the button to select your profile picture from your device's gallery.
+      </Text>
+
+
+      <Pressable style={styles.finishButton} onPress={handleFinish}>
+        <Text style={styles.finishButtonText}>Finish</Text>
+      </Pressable>  
     </View>
   );
 }
@@ -39,28 +99,80 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#f9f9f9',
+    padding: 20,
   },
-  imgcontainer:{
-    width:300,
-    height:300,
-    backgroundColor:'grey',
-    borderRadius:'50%'
+  heading: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  subHeading: {
+    fontSize: 16,
+    fontWeight: '400',
+    marginBottom: 20,
+    color: '#555',
+  },
+  imgContainer: {
+    width: 250,
+    height: 250,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 125,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#ccc',
   },
   image: {
-    width:300,
-    aspectRatio:1,
-    // resizeMode:'contain',
-    borderRadius:150
+    width: '100%',
+    height: '100%',
+    borderRadius: 125,
   },
-  button:{
-    width:50,
-    height:50,
-    borderRadius:25,
-    backgroundColor:'black',
-    justifyContent:'center'
+  placeholderText: {
+    color: '#808080',
+    fontSize: 18,
+    fontStyle: 'italic',
   },
-  btntext:{
-    color:'white',
-    textAlign:'center',
-  }
+  button: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#1e90ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  btnText: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  instructions: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#777',
+    marginTop: 10,
+  },
+  finishButton: {
+    width: 200,
+    height: 50,
+    backgroundColor: '#4CAF50',  // Green color
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    marginTop: 20,
+  },
+  finishButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });

@@ -21,6 +21,11 @@ export const RegistrationProvider = ({ children }) => {
     gender:'',
     age:'',
     activityLevel:'',
+    dietType:'',
+    // allergens:'',
+    // restrictedIngredients:'',
+    // notes:'',
+    profileUrl:'',
     // Add more fields as needed
   });
 

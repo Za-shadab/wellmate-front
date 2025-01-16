@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/app/(auth)/login.jsx", "src/app/index.tsx", "src/app/(onboard)/selectgoal.jsx", "src/components/caloriesBurn.jsx"  ]
+, "src/app/(auth)/login.jsx", "src/app/index.tsx", "src/app/(onboard)/selectgoal.jsx", "src/components/caloriesBurn.jsx", "src/app/(sliders)/_layout.tsx"  ]
 }

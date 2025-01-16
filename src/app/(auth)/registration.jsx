@@ -69,12 +69,12 @@ export default function RegisterScreen() {
     
     (async () => {
       try{
-        const response = await axios.post('http://192.168.200.137:3000/api/register', payload)
+        const response = await axios.post('http://192.168.200.148:3000/api/register', payload)
         console.log('Server response is:', response.data);
         console.log('Navigating to health...');
         navigation.navigate('(onboard)');
       }catch(err){
-        console.log('error sending data',err);
+        console.log('error sending data',err.message);
       }
     })()
   }

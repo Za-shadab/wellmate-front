@@ -35,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           headerShown:false,
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="view-dashboard-edit-outline" size={24} color="black" />,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="view-dashboard-edit-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -43,35 +43,36 @@ export default function TabLayout() {
         options={{
           headerShown:false,
           // title: 'logs',
-          tabBarIcon: ({ color }) => <Ionicons name="create-outline" size={24} color="black" />,//<TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="create-outline" size={24} color={color} />,//<TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen
         name='plans'
         options={{
           title:'plans',
-          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color="black" />
+          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color={color} />
         }}
       />
       <Tabs.Screen
         name='profile'
         options={{
           title:'profile',
-          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color="black" />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color={color} />,
+          headerShown:false,
+          // headerRight: () => (
+          //   <Link href="/modal" asChild>
+          //     <Pressable>
+          //       {({ pressed }) => (
+          //         <FontAwesome
+          //           name="info-circle"
+          //           size={25}
+          //           color={Colors[colorScheme ?? 'light'].text}
+          //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+          //         />
+          //       )}
+          //     </Pressable>
+          //   </Link>
+          // ),
         }}
       />
     </Tabs>

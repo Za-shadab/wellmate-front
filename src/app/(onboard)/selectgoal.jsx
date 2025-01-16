@@ -6,8 +6,9 @@ import {
   StyleSheet,
   FlatList,
   SafeAreaView,
+  Image,
 } from 'react-native';
-import Animated,{FadeIn, FadeInRight} from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeInLeft } from 'react-native-reanimated';
 import { useNavigation } from 'expo-router';
 import Progressbar from '../../components/progressbar';
 import { useRegistrationContext } from '../context/RegistrationContext';
@@ -16,23 +17,31 @@ const GoalsScreen = () => {
   const [selectedGoals, setSelectedGoals] = useState([]);
   const navigation = useNavigation();
   const { registrationData, updateRegistrationData } = useRegistrationContext({});
-  useEffect(()=>{
-    console.log("Context Information....................................", registrationData);
-  },[registrationData])
-  
+
+  useEffect(() => {
+    console.log('Context Information:', registrationData);
+  }, [registrationData]);
+
   const goals = [
-    'Lose Weight',
-    'Maintain Weight',
-    'Gain Weight',
-    'Gain Muscle',
-    'Modify My Diet',
-    'Manage Stress',
-    'Increase My Step Count',
+    { str: 'Lose Weight', img: require('../../../assets/images/scales.png') },
+    { str: 'Maintain Weight', img: require('../../../assets/images/gain.png') },
+    { str: 'Gain Weight', img: require('../../../assets/images/weight.png') },
+    { str: 'Gain Muscle', img: require('../../../assets/images/muscle.png') },
+    { str: 'Modify My Diet', img: require('../../../assets/images/balanced-diet.png') },
+    { str: 'Manage Stress', img: require('../../../assets/images/stress-management.png') },
+    { str: 'Increase My Step Count', img: require('../../../assets/images/running-shoes.png') },
   ];
+
+  const conflictingGoals = ['Gain Weight', 'Lose Weight', 'Maintain Weight'];
 
   const toggleGoal = (goal) => {
     if (selectedGoals.includes(goal)) {
       setSelectedGoals(selectedGoals.filter((g) => g !== goal));
+    } else if (conflictingGoals.includes(goal)) {
+      const hasConflictingGoal = selectedGoals.some((g) => conflictingGoals.includes(g));
+      if (!hasConflictingGoal) {
+        setSelectedGoals([...selectedGoals, goal]);
+      }
     } else if (selectedGoals.length < 3) {
       setSelectedGoals([...selectedGoals, goal]);
     }
@@ -43,123 +52,150 @@ const GoalsScreen = () => {
   return (
     <Animated.View
       style={styles.outercontainer}
-      entering={FadeInRight.duration(1000)}
+      entering={FadeInRight.duration(300)}
+      exiting={FadeInLeft.duration(300)}
     >
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Goals</Text>
-        <Progressbar cone={1} ctwo={0} cthree={0} cfour={0} cfive={0} csix={0}/>
-        <Text style={styles.subtitle}>
-          Select up to 3 that are important to you, including one weight goal.
-        </Text>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Goals</Text>
+          <Progressbar cone={1} ctwo={0} cthree={0} cfour={0} cfive={0} csix={0} />
+          <Text style={styles.subtitle}>
+            Select up to 3 goals that are important to you
+            {selectedGoals.length > 0 && ` (${selectedGoals.length} selected)`}.
+          </Text>
+        </View>
 
-      <FlatList
-        data={goals}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.goalItem,
-              isGoalSelected(item) && styles.selectedGoal,
-            ]}
-            onPress={() => toggleGoal(item)}
-          >
-            <Text
+        <FlatList
+          data={goals}
+          keyExtractor={(item) => item.str}
+          renderItem={({ item }) => (
+            <TouchableOpacity
               style={[
-                styles.goalText,
-                isGoalSelected(item) && styles.selectedGoalText,
+                styles.goalItem,
+                isGoalSelected(item.str) && styles.selectedGoal,
               ]}
+              onPress={() => toggleGoal(item.str)}
             >
-              {item}
-            </Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.goalsList}
-      />
+              <View style={styles.goalContent}>
+                <Text
+                  style={[
+                    styles.goalText,
+                    isGoalSelected(item.str) && styles.selectedGoalText,
+                  ]}
+                >
+                  {item.str}
+                </Text>
+                <Image source={item.img} style={styles.goalImage} />
+              </View>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.goalsList}
+        />
 
-      <TouchableOpacity
-        style={[
-          styles.nextButton,
-          selectedGoals.length === 0 && styles.disabledButton,
-        ]}
-        disabled={selectedGoals.length === 0}
-        onPress={()=>{
-          updateRegistrationData('goals', selectedGoals);
-          navigation.navigate('ageselect')
-        }}
-      >
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <TouchableOpacity 
+          style={[
+            styles.nextButton,
+            selectedGoals.length === 0 && styles.disabledButton,
+          ]}
+          disabled={selectedGoals.length === 0}
+          onPress={() => {
+            updateRegistrationData('goals', selectedGoals);
+            navigation.navigate('ageselect');
+          }}
+        >
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  outercontainer:{
-    flex:1,
-    // marginTop:'8%'
+  outercontainer: {
+    flex: 1,
+    marginTop: '8%',
+    backgroundColor: '#F7F8FA',
   },
   container: {
     flex: 1,
-    // backgroundColor: '#1c1c1e',
-    backgroundColor:'#FFFFFF',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   header: {
     marginBottom: 20,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    // color: '#fff',
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2D3748',
     marginBottom: 5,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#a1a1a6',
-    marginTop:'2%'
+    fontSize: 16,
+    color: '#718096',
+    textAlign: 'center',
+    marginTop: '2%',
+    lineHeight: 22,
   },
   goalsList: {
     paddingBottom: 20,
   },
   goalItem: {
-    // backgroundColor: '#2c2c2e',
-    backgroundColor:'#F5F5F5',
+    backgroundColor: '#E2E8F0',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   selectedGoal: {
-    // backgroundColor: '#007aff',
-    // backgroundColor:'#FF5722'
-    backgroundColor:'black'
+    backgroundColor: '#4A90E2',
+  },
+  goalContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   goalText: {
     fontSize: 16,
-    // color: '#fff',
+    color: '#2D3748',
+    fontWeight: '500',
   },
   selectedGoalText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
-  nextButton: {
-    // backgroundColor: '#007aff',
-    // backgroundColor:'#FF5722',
-    backgroundColor:'black',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
+  goalImage: {
+    width: 34,
+    height: 34,
+    marginLeft: 10,
   },
+  nextButton: {
+    backgroundColor: '#4A90E2',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    marginTop: 20,
+  },    
   disabledButton: {
-    backgroundColor: '#3a3a3c',
+    backgroundColor: '#A0AEC0',
   },
   nextButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
 

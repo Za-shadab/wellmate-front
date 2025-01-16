@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Animated, TextInput, Pressable} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Animated, TextInput, Pressable, ScrollView} from "react-native";
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; 
 import { Link} from "expo-router";
+import { useNavigation } from "expo-router";
 import {useRegistrationContext} from "../context/RegistrationContext";
 
 
   const GenderSelector = () =>{
     const [selectedOption, setSelectedOption] = useState(null);
+    const navigation = useNavigation();
     const options = ["Male", "Female"];
     const [age, setage] = useState('');
+    const [height, setheight] = useState('');
+    const [weight, setweight] = useState('');
     const { registrationData, updateRegistrationData } = useRegistrationContext({});
     useEffect(()=>{
       console.log("Context Information....................................", registrationData);
@@ -17,8 +21,12 @@ import {useRegistrationContext} from "../context/RegistrationContext";
 
 
     return(
+    <ScrollView
+      style={styles.ScrollView}
+    >
     <View style={styles.container}>
       <Text style={styles.title}>Tell us about yourself</Text>
+      <Text style={styles.subtitle}>Your information helps us create a personalized experience for you.</Text>
       <Text style={styles.gtitle}>Choose you Gender:</Text>
       <View
         style={styles.radiocontainer}
@@ -32,15 +40,15 @@ import {useRegistrationContext} from "../context/RegistrationContext";
             
           }}
         >
-          <Text style={styles.radioText}>{option}</Text>
+          <Text style={[styles.radioText, selectedOption === option && {color:'#fff'}]}>{option}</Text>
           <View style={styles.radioCircle}>
-          {selectedOption === option && <FontAwesome6 name="check-circle" size={18} color="black" />}
+          {selectedOption === option && <FontAwesome6 name="check-circle" size={18} color="white" />}
           </View>
         </TouchableOpacity>
       ))}
       </View>
       <View style={styles.agecontainer}>
-        <Text>
+        <Text style={styles.subhead}>
           How Old are you?
         </Text>
         <TextInput
@@ -50,19 +58,42 @@ import {useRegistrationContext} from "../context/RegistrationContext";
           style={styles.ageinput}
           keyboardType="numeric"
         />
+        <Text style={styles.subhead}>
+        What is your height? (cm)
+        </Text>
+        <TextInput
+          placeholder="height"
+          value={height}
+          onChangeText={setheight}
+          style={styles.ageinput}
+          keyboardType="numeric"
+        />
+        <Text style={styles.subhead}>
+        What is your weight? (kg)
+        </Text>
+        <TextInput
+          placeholder="weight"
+          value={weight}
+          onChangeText={setweight}
+          style={styles.ageinput}
+          keyboardType="numeric"
+        />
       </View>
 
-      <Link href={'activitylevel'} asChild>
-      <Pressable style={styles.button}
+      <TouchableOpacity style={[styles.button,
+        (!selectedOption || !age || !height || !weight) && styles.disabledButton,
+      ]}
         onPress={()=>{
           updateRegistrationData('gender', selectedOption);
-          updateRegistrationData('age', age)
+          updateRegistrationData('age', age);
+          navigation.navigate('activitylevel')
         }}
+        disabled={!selectedOption || !age || !height || !weight}
       >
           <Text style={styles.btntext}>Next</Text>
-      </Pressable>
-      </Link>
+      </TouchableOpacity>
     </View>
+    </ScrollView>
     )
   }
 
@@ -74,83 +105,103 @@ const AgeSelector = () => {
 };
 
 const styles = StyleSheet.create({
+  ScrollView: {
+    flex: 1,
+    backgroundColor: "#F7F8FA", // Light background color for better contrast
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF",
   },
   title: {
-    fontSize:18,
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#2C3E50", // Darker text color for better readability
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#7F8C8D",
     marginBottom: 20,
-    fontWeight:'600'
+    textAlign: "center",
   },
-  gtitle:{
-    marginBottom:20
+  gtitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 10,
+    color: "#34495E",
   },
-  selectedButton: {
-    borderWidth:2,
-    borderColor:'#4B4376' // Highlighted background for selected option
-  },
-  radiocontainer:{
-    height:'7%',
-    // paddingHorizontal:'4%',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    marginBottom:20
-  },
-  innercontainer:{
-    flex:1,
-    height:'10%',
-    width:'100%',
-    borderRadius:9,
+  radiocontainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+    height:'10%'
   },
   radioButtonContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent:'space-evenly',
-    height:'100%',
-    width:'40%',
-    borderRadius:9,
-    borderWidth:1
-  },
-  selectedCircle: {
-    height: 20,
-    width: 20,
+    justifyContent: "space-between",
+    padding: 10,
     borderRadius: 10,
-    backgroundColor: "#4CAF50",
+    borderWidth: 1,
+    borderColor: "#BDC3C7",
+    width: "45%",
+    backgroundColor: "#ECF0F1",
+  },
+  selectedButton: { 
+    borderColor: "#4A90E2",
+    borderWidth:2,
+    backgroundColor: "#4A90E2", // Highlighted background for selected option
   },
   radioText: {
     fontSize: 16,
-    color:'#494F55'
+    color: "#2C3E50",
+    marginLeft: 5,
   },
-  selectedText: {
+  agecontainer: {
+    marginTop: 20,
+  },
+  subhead: {
     fontSize: 16,
-    fontStyle: "italic",
+    color: "#34495E",
+    marginTop: 20,
+    marginBottom: 10,
   },
-  agecontainer:{
-    flex:1,
+  ageinput: {
+    height: 50,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#BDC3C7",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    fontSize: 18,
+    backgroundColor: "#FFFFFF",
+    marginBottom: 10,
   },
-  ageinput:{
-    height:45,
-    width:'100%',
-    borderWidth:1,
-    borderRadius:9,
-    marginTop:20
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginTop: 20,
   },
-  button:{
-    height:45,
-    width:'100%',
-    // backgroundColor:'#FF5722',
-    backgroundColor:'black',
-    borderRadius:20,
-    justifyContent:'center',
-    alignSelf:'center'
+  btntext: {
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1,
   },
-  btntext:{
-    fontSize:22,
-    color:'white',
-    textAlign:'center',
-  }
+  disabledButton: {
+    backgroundColor: '#A0AEC0',
+  },
 });
-
 export default AgeSelector;

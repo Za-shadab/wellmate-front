@@ -1,128 +1,235 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  FlatList,
+  Pressable,
+  Image
+} from 'react-native';
+import { useNavigation } from 'expo-router';
+import { useRegistrationContext } from '../context/RegistrationContext';
+import Progressbar from '../../components/progressbar';
 
-export const DietPreferences = () => {
-  const [dietType, setDietType] = useState('');
-  const [allergens, setAllergens] = useState('');
-  const [restrictedIngredients, setRestrictedIngredients] = useState('');
-  const [notes, setNotes] = useState('');
-  const navgation = useNavigation();
 
-  const handleSubmit = () => {
-    const preferences = {
-      dietType,
-      allergens,
-      restrictedIngredients,
-      notes,
-    };
-    
-    console.log('Preferences Submitted:', preferences);
-    navgation.navigate('(tabs)')
-    // You can handle form submission here, e.g., send data to the backend.
+const DietaryPreferencesScreen = () => {
+  const [selectedPreference, setSelectedPreference] = useState(null);
+  const { registrationData, updateRegistrationData } = useRegistrationContext({});
+  const navigation = useNavigation();
+
+
+  const preferences = [
+    { id: 1, label: 'No Preference', img: require('../../../assets/images/dish.png') },
+    { id: 2, label: 'Vegetarian', img: require('../../../assets/images/dish.png') },
+    { id: 3, label: 'Keto friendly', img: require('../../../assets/images/dish.png') },
+    { id: 4, label: 'Mediterranean', img: require('../../../assets/images/dish.png') },
+    { id: 5, label: 'Paleo', img: require('../../../assets/images/dish.png') },
+    { id: 6, label: 'Pescatarian', img: require('../../../assets/images/dish.png') },
+    { id: 7, label: 'Crustacean free', img: require('../../../assets/images/dish.png') }
+  ];
+
+  const handleSelect = (id) => {
+    setSelectedPreference(id);
   };
+  const handleNext = () =>{
+    navigation.navigate('profilePicker');
+    updateRegistrationData('dietType', selectedPreference);
+  }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Diet Preferences</Text>
+    <SafeAreaView style={styles.container}>
+      {/* Progress Bar */}
 
-      {/* Diet Type Picker */}
-      <Text style={styles.label}>Select Diet Type:</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={dietType}
-          onValueChange={(value) => setDietType(value)}
-        >
-          <Picker.Item label="Select a diet type" value="" />
-          <Picker.Item label="Vegetarian" value="vegetarian" />
-          <Picker.Item label="Vegan" value="vegan" />
-          <Picker.Item label="Pescatarian" value="pescatarian" />
-          <Picker.Item label="Keto" value="keto" />
-          <Picker.Item label="Paleo" value="paleo" />
-        </Picker>
+      {/* Title and Subtitle */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Tell us about what you eat?</Text>
+        <Text style={styles.subtitle}>
+          Let us know what your current dietary preferences are.
+        </Text>
+        <View style={styles.progressBarContainer}>
+      </View>
       </View>
 
-      {/* Allergens Input */}
-      <Text style={styles.label}>Allergens:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="e.g., peanuts, dairy, gluten"
-        value={allergens}
-        onChangeText={setAllergens}
+      {/* List of Preferences */}
+      <FlatList
+        data={preferences}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.preferenceItem,
+              selectedPreference === item.id && styles.selectedItem,
+            ]}
+            onPress={() => handleSelect(item.id)}
+          >
+            <Image
+              source={item.img}
+              style={styles.preference}
+            />
+
+            <Text
+              style={[
+                styles.preferenceText,
+                selectedPreference === item.id && styles.selectedText,
+              ]}
+            >
+              {item.label}
+            </Text>
+
+            <View style={styles.radiobutton}>
+              {
+                selectedPreference === item.id && <View style={styles.selectedradioButton}></View>
+              }
+            </View>
+          </TouchableOpacity>
+        )}
       />
 
-      {/* Restricted Ingredients Input */}
-      <Text style={styles.label}>Restricted Ingredients:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="e.g., sugar, salt, processed food"
-        value={restrictedIngredients}
-        onChangeText={setRestrictedIngredients}
-      />
-
-      {/* Additional Notes Input */}
-      <Text style={styles.label}>Additional Notes:</Text>
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Any other preferences or notes"
-        value={notes}
-        onChangeText={setNotes}
-        multiline
-        numberOfLines={4}
-      />
-
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
+      {/* Next Button */}
+      <TouchableOpacity
+        style={[
+          styles.nextButton,
+          !selectedPreference && styles.disabledButton,
+        ]}
+        disabled={!selectedPreference}
+        onPress={() => {
+          console.log('Selected Preference:', selectedPreference);
+          // Navigate to the next screen
+        }}
+      >
+        <TouchableOpacity style={
+          styles.nextButtonText
+        }
+          onPress={handleNext}
+        ><Text
+          style={styles.nextButtonText}
+        >Next</Text>
+        </TouchableOpacity>
       </TouchableOpacity>
-    </ScrollView>
+
+      {/* Footer Note */}
+      <Text style={styles.footerNote}>
+        We will never share your personal information with anyone.
+      </Text>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
     padding: 20,
-    backgroundColor: '#f9f9f9',
   },
-  heading: {
+  progressBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  progressBar: {
+    flex: 1,
+    height: 6,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 3,
+    marginRight: 10,
+  },
+  progressFill: {
+    width: '40%',
+    height: '100%',
+    backgroundColor: '#4A90E2',
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 14,
+    color: '#4A5568',
+  },
+  header: {
+    marginBottom: 20,
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    color: '#2D3748',
+    marginBottom: 5,
   },
-  label: {
+  subtitle: {
     fontSize: 16,
-    marginBottom: 8,
+    color: '#718096',
+    lineHeight: 22,
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: '#fff',
-  },
-  textArea: {
-    height: 100,
-  },
-  button: {
-    backgroundColor: '#007bff',
+  preferenceItem: {
+    // backgroundColor: '#F7FAFC',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+    marginVertical: 5,
+    flexDirection: 'row',
     alignItems: 'center',
+    // justifyContent: 'space-between',
+    borderColor: '#E2E8F0',
+    borderWidth: 1,
+    gap:15
   },
-  buttonText: {
-    color: '#fff',
+  radiobutton:{
+    width:20,
+    height:20,
+    borderColor:'#E2E8F9',
+    borderWidth:1,
+    borderRadius:10,
+    marginLeft:'auto',
+    marginRight:0
+  },
+  selectedradioButton:{
+    width:15, 
+    height:15, 
+    borderRadius:9, 
+    margin:'auto', 
+    backgroundColor:'#4A90E2'
+  },
+  selectedItem: {
+    // backgroundColor: '#E6F6FF',
+    borderColor: '#4A90E2',
+  },
+  preferenceText: {
     fontSize: 16,
+    color: '#4A5568',
+  },
+  preference:{
+    width:30,
+    aspectRatio:1
+  },
+  selectedText: {
+    color: '#4A90E2',
+    fontWeight: '600',
+  },
+  nextButton: {
+    backgroundColor: '#4A90E2',  // Prominent blue color
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 30,
+    elevation: 4,  // Added shadow for depth
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+  },
+  disabledButton: {
+    backgroundColor: '#A0AEC0',
+  },
+  nextButtonText: {
+    fontSize: 18,  // Slightly bigger to make it more clickable
     fontWeight: 'bold',
+    color: '#fff',
+    textTransform: 'uppercase',
+  },
+  footerNote: {
+    fontSize: 12,
+    color: '#A0AEC0',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
-export default DietPreferences;
+export default DietaryPreferencesScreen;
