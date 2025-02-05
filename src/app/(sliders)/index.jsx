@@ -26,8 +26,8 @@ return(
 
         <Animated.View 
         style={styles.shapeone}>
-            <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Welcome</Animated.Text>
-            <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
+            <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Eat Healthy</Animated.Text>
+            <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Fuel your body, embrace health—WellMate makes eating smart and staying fit effortless!</Animated.Text>
         </Animated.View>
 
 

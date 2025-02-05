@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, Pressable,ScrollView, StatusBar, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -9,7 +9,7 @@ import {Link} from 'expo-router'
 import axios from 'axios'
 import { useNavigation} from 'expo-router';
 import { useRegistrationContext } from '../context/RegistrationContext';
-
+import {useuserDetailContext} from '../context/UserDetailContext';
 
 
 // Validation schema with yup
@@ -40,11 +40,14 @@ export default function RegisterScreen() {
   });
   const { location, address, errorMsg } = uselocation();
   const navigation = useNavigation();
-  // console.log("Navigation",navigation);
   const { registrationData, updateRegistrationData } = useRegistrationContext({});
+  const {userDetail, updateUserDetail} = useuserDetailContext({});
+
+
   useEffect(()=>{
     console.log("Context Information....................................", registrationData);
-  },[registrationData])
+    console.log("User Informaton.........................................", userDetail);
+  },[registrationData, userDetail])
 
   const onSubmit = data => {
     data.location = address;
@@ -55,7 +58,6 @@ export default function RegisterScreen() {
     updateRegistrationData('password', data.password)
     updateRegistrationData('location', data.location)
     updateRegistrationData('role', data.role)
-
   
 
     const payload = {
@@ -69,9 +71,12 @@ export default function RegisterScreen() {
     
     (async () => {
       try{
-        const response = await axios.post('http://192.168.200.148:3000/api/register', payload)
-        console.log('Server response is:', response.data);
-        console.log('Navigating to health...');
+        if(!payload.location || !payload.email || !payload.name || !payload.password || !payload.password) return
+        const response = await axios.post('http://192.168.0.140:3000/api/register', payload);
+        const userId = response.data.userId
+        console.log('Server response is:', response.data.userId);
+        console.log("User ID ............", userId);
+        updateUserDetail('userId', userId);
         navigation.navigate('(onboard)');
       }catch(err){
         console.log('error sending data',err.message);

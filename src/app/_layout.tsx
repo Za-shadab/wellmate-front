@@ -10,6 +10,7 @@ import { useNavigation, StackActions} from '@react-navigation/native';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { boolean } from 'yup';
 import { RegistrationProvider } from './context/RegistrationContext';
+import { UserDetailProvider } from './context/UserDetailContext';
 
 
 
@@ -55,17 +56,18 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
   return (
     <RegistrationProvider>
+    <UserDetailProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{headerShown: false}}/>
         <Stack.Screen name="(sliders)" options={{headerShown: false}}/>
         <Stack.Screen name="(auth)" options={{headerShown: false}}/>
         <Stack.Screen name="(onboard)" options={{headerShown: false}}/>
-        <Stack.Screen name="health" options={{headerShown: false}}/>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
+    </UserDetailProvider>
     </RegistrationProvider>
   );
 }

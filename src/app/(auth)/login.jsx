@@ -51,7 +51,7 @@ const LogIn = () => {
 
     (async()=>{ 
       try {
-          const response= await axios.post('http://192.168.0.132:3000/api/login', userData);
+          const response= await axios.post('http://192.168.3.17:3000/api/login', userData);
           console.log("server response:", response.data); 
           AsyncStorage.setItem('token', response.data.token);
           AsyncStorage.setItem('isLoggedIn', JSON.stringify(true))

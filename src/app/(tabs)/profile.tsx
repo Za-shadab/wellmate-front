@@ -1,7 +1,25 @@
-import React from 'react';
+import React,{useState, useEffect} from 'react';
 import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
+import { useuserDetailContext } from '../context/UserDetailContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const UserProfile = () => {
+  const { userDetail, updateUserDetail } = useuserDetailContext();
+  const [regularId, setRegularId] = useState('');
+
+  useEffect(() => {
+    // Fetch user data from AsyncStorage on component mount
+    const loadUserData = async () => {
+      const storedRegularId = await AsyncStorage.getItem('regularId');
+      if (storedRegularId) {
+        setRegularId(storedRegularId);
+      }
+    };
+    loadUserData();
+  }, []);
+
+
   // Sample user data
   const user = {
     name: "John Doe",

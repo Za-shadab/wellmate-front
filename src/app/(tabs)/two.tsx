@@ -18,74 +18,27 @@ export default function TabTwoScreen() {
           <View style={styles.centeredView}>
             <RingProgress
               radius={120}
+              strokeWidth={10}
               progress={0.8}
               value={3000}
               color={"#1E90FF"}
               icon={require("../../../assets/images/steps_blue.png")}
               iconHeight={50}
               labelSize={30}
-              icontop={4.5}
-              labeltop={8}
+              icontop={8}
+              labeltop={14}
             />
-          </View>
+        </View>
+          <View>
           <Text style={styles.description}>
-            You’ve completed 80% of your step goal for today. Keep it up!
+            You’ve completed 80% of your step goal for today.
           </Text>
-        </View>
-
-        {/* Additional Progress Rings */}
-        <View style={styles.shadowBox}>
-          <Text style={styles.subHeading}>Additional Stats</Text>
-          <View style={styles.rowView}>
-            <View style={styles.statBox}>
-              <RingProgress
-                radius={33}
-                strokeWidth={5}
-                color={"#E65100"}
-                progress={0.8}
-                value={`2kcal`}
-                icon={require("../../../assets/images/kcal.png")}
-                iconHeight={30}
-                labelSize={15}
-                icontop={4}
-                labeltop={14}
-              />
-              <Text style={styles.statLabel}>Calories Burned</Text>
-            </View>
-
-            <View style={styles.statBox}>
-              <RingProgress
-                radius={33}
-                strokeWidth={5}
-                color={"#006064"}
-                progress={0.8}
-                value={`2km/hr`}
-                icon={require("../../../assets/images/wspeed.png")}
-                iconHeight={30}
-                labelSize={15}
-                icontop={4}
-                labeltop={14}
-              />
-              <Text style={styles.statLabel}>Walking Speed</Text>
-            </View>
-
-            <View style={styles.statBox}>
-              <RingProgress
-                radius={33}
-                strokeWidth={5}
-                color={"#FFB800"}
-                progress={0.8}
-                value={`200kms`}
-                icon={require("../../../assets/images/placeholder.png")}
-                iconHeight={30}
-                labelSize={15}
-                icontop={4}
-                labeltop={14}
-              />
-              <Text style={styles.statLabel}>Distance Traveled</Text>
-            </View>
+          <Text style={styles.description}>
+            Keep it up!
+          </Text>
           </View>
         </View>
+
 
         {/* Heart Rate Graph */}
         <View style={styles.shadowBox}>
@@ -107,9 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#F8F9FA',
-    gap: 50,
+    backgroundColor: '#fff',
   },
   heading: {
     fontSize: 28,
@@ -127,8 +78,9 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     color: '#666',
-    marginTop: 10,
+    marginTop: 8,
     textAlign: 'center',
+    fontWeight:'600'
   },
   shadowBox: {
     flex: 1,
@@ -141,8 +93,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    elevation: 5,
-    marginBottom: 20,
   },
   centeredView: {
     flex: 1,

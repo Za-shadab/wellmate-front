@@ -20,11 +20,12 @@ export const RegistrationProvider = ({ children }) => {
     goals: '',
     gender:'',
     age:'',
+    height:'',
+    weight:'',
     activityLevel:'',
     dietType:'',
-    // allergens:'',
+    allergens:'',
     // restrictedIngredients:'',
-    // notes:'',
     profileUrl:'',
     // Add more fields as needed
   });

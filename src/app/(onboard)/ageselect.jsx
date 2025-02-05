@@ -86,6 +86,8 @@ import {useRegistrationContext} from "../context/RegistrationContext";
         onPress={()=>{
           updateRegistrationData('gender', selectedOption);
           updateRegistrationData('age', age);
+          updateRegistrationData('height', height);
+          updateRegistrationData('weight', weight);
           navigation.navigate('activitylevel')
         }}
         disabled={!selectedOption || !age || !height || !weight}

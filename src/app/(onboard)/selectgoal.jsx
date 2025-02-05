@@ -113,7 +113,7 @@ const GoalsScreen = () => {
 const styles = StyleSheet.create({
   outercontainer: {
     flex: 1,
-    marginTop: '8%',
+    // marginTop: '8%',
     backgroundColor: '#F7F8FA',
   },
   container: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
-    marginTop: 20,
+    marginBottom: 20,
   },    
   disabledButton: {
     backgroundColor: '#A0AEC0',

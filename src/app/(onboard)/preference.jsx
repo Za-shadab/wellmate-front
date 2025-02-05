@@ -30,13 +30,9 @@ const DietaryPreferencesScreen = () => {
     { id: 7, label: 'Crustacean free', img: require('../../../assets/images/dish.png') }
   ];
 
-  const handleSelect = (id) => {
-    setSelectedPreference(id);
+  const handleSelect = (label) => {
+    setSelectedPreference(label);
   };
-  const handleNext = () =>{
-    navigation.navigate('profilePicker');
-    updateRegistrationData('dietType', selectedPreference);
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -62,7 +58,7 @@ const DietaryPreferencesScreen = () => {
               styles.preferenceItem,
               selectedPreference === item.id && styles.selectedItem,
             ]}
-            onPress={() => handleSelect(item.id)}
+            onPress={() => handleSelect(item.label)}
           >
             <Image
               source={item.img}
@@ -72,7 +68,7 @@ const DietaryPreferencesScreen = () => {
             <Text
               style={[
                 styles.preferenceText,
-                selectedPreference === item.id && styles.selectedText,
+                selectedPreference === item.label && styles.selectedText,
               ]}
             >
               {item.label}
@@ -80,7 +76,7 @@ const DietaryPreferencesScreen = () => {
 
             <View style={styles.radiobutton}>
               {
-                selectedPreference === item.id && <View style={styles.selectedradioButton}></View>
+                selectedPreference === item.label && <View style={styles.selectedradioButton}></View>
               }
             </View>
           </TouchableOpacity>
@@ -96,17 +92,13 @@ const DietaryPreferencesScreen = () => {
         disabled={!selectedPreference}
         onPress={() => {
           console.log('Selected Preference:', selectedPreference);
-          // Navigate to the next screen
+          // navigation.navigate('profilePicker')
+          updateRegistrationData('dietType', selectedPreference);
+          navigation.navigate('allergens')
         }}
-      >
-        <TouchableOpacity style={
-          styles.nextButtonText
-        }
-          onPress={handleNext}
-        ><Text
+      ><Text
           style={styles.nextButtonText}
         >Next</Text>
-        </TouchableOpacity>
       </TouchableOpacity>
 
       {/* Footer Note */}

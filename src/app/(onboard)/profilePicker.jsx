@@ -3,13 +3,18 @@ import { Image, View, StyleSheet, Pressable, Text, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useRegistrationContext } from '../context/RegistrationContext';
+import { useuserDetailContext } from '../context/UserDetailContext';
 import { useNavigation } from 'expo-router';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
   const {registrationData, updateRegistrationData} = useRegistrationContext({});
+  const {userDetail, updateUserDetail} = useuserDetailContext({});
+  const [status, setstatus] = useState(false);
+  console.log("user detail......................", userDetail);
+  
   const navigation = useNavigation();
-
+  
   const pickImage = async () => {
     console.log('Button Pressed'); // Check if the function is being called
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -24,9 +29,6 @@ export default function ImagePickerExample() {
       setImage(result.assets[0].uri);
 
       updateRegistrationData('profileUrl', result.assets[0].uri)
-      console.log(image);
-      console.log(registrationData.dietType);
-
       const formData = new FormData();
       formData.append('file', {
         uri: result.assets[0].uri,
@@ -34,27 +36,54 @@ export default function ImagePickerExample() {
         name: `profile_image.${result.assets[0].uri.split('.').pop()}`,  // Customize the name as per your need
       });
   
-      console.log(formData);
   
     (async () => {
       try{
-        const response = await axios.post('http://192.168.200.148:3000/pfupload/profileUpload', formData, {
+        const response = await axios.post('http://192.168.0.113:3000/pfupload/profileUpload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        console.log('Server response is:', response.data);
+        console.log('Server response is:', response.data.url);
+
+        const data = {
+          userId : userDetail.userId,
+          age : registrationData.age,
+          height : registrationData.height,
+          weight : registrationData.weight,
+          gender: registrationData.gender,
+          activityLevel : registrationData.activityLevel,
+          goals : registrationData.goals,
+          profileUrl : response.data.url
+        };
+
+        
+        const response2 = await axios.post('http://192.168.0.140:3000/regular/regularUsers', data)
+        console.log('Servers Second response is:', response2);
+        setstatus(true)
+        await updateUserDetail('regularId', response2.data.regularUserId)
+        const data2 = {
+          regularUserId: userDetail.regularId,
+          allergens: registrationData.allergens,
+          dietType: registrationData.dietType
+        }
+
+        const response3 = await axios.post('http://192.168.0.113://3000/preference/dietary-preferences', data2)
+        console.log("server third response is: ", response3);
+        
       }catch(err){
         console.log('error sending data',err.message);
       }
     })()
 
-    } else {
+    }else{
       Alert.alert("Image selection was canceled.");
     }
   };
-  const handleFinish = ()=>{
+
+
+const handleFinish = ()=>{
     console.log("Profile photo update finish");
     navigation.navigate('(tabs)')
-  }
+}
 
   return (
     <View style={styles.container}>

@@ -1,20 +1,15 @@
 import React,{useState, useEffect} from 'react';
-import { View, Text, StyleSheet, Pressable, Image, Platform, FlatList,Dimensions} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, Platform, FlatList, Dimensions, ImageSourcePropType} from 'react-native';
 import {Link, Redirect} from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
-import Animated, { FadeInDown, BounceOut, BounceInUp,} from 'react-native-reanimated';
+import Animated, { FadeInDown, BounceOut, BounceInUp, SlideInUp} from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, StackActions } from '@react-navigation/native';
 import  RootParamList  from './types';
-import {Silderdata} from './data';
 import { date } from 'yup';
 
 
-
-
 const Onboard = () => {
-
-
     const[isLoggedIn, setisLoggedIn] = useState<string | null>(null)
     const navigation = useNavigation();
     const screenwidth = Dimensions.get('window').width;
@@ -29,21 +24,21 @@ const Onboard = () => {
         getData()
     },[])
 
+    
     useEffect(()=>{
         if(isLoggedIn !== null && navigation){
+            console.log("hello");
             if(isLoggedIn === 'true'){
                 console.log("Inside Loggein");
-                // navigation.dispatch(StackActions.replace('(tabs)'))
-                navigation.dispatch(StackActions.replace('(sliders)'))
+                navigation.dispatch(StackActions.replace('(tabs)'))
+                // navigation.dispatch(StackActions.replace('(onboard)'))
             }
         }
     },[isLoggedIn])
 
 
+    function ImageSlider({ imagesource }: {imagesource: ImageSourcePropType}){
 
-
-
-    function ImageSlider({ imagesource }: { imagesource: number | { uri: string } }){
         return(
             <Animated.View style={styles.imageContainer}>
             <Animated.Image
@@ -55,38 +50,27 @@ const Onboard = () => {
         )
     }
 
+
     return(
         <View style={styles.container}>
-            <Text>Hello</Text>
-            {/* <Animated.FlatList
-                data={Silderdata}
-                renderItem={({item})=>{
-                        return(
-                            <ImageSlider imagesource={item.img}/>
-                        )
-                }}
-                keyExtractor={(item)=> item.id.toString()}
-                horizontal
-                snapToInterval={Dimensions.get('window').width}
-                decelerationRate='normal'
-            /> */}
-            {/* <ImageSlider imagesource={require("../../assets/images/Frame (4).png")}/>
+            <ImageSlider imagesource={require("../../assets/images/Frame (5).png")}/>
 
             <Animated.View 
-            style={styles.shapeone}>
-                <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Welcome</Animated.Text>
-                <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
+            style={styles.shapeone}
+            >
+            <Animated.Text style={styles.weltxt} entering={BounceInUp.delay(100).duration(2000)}>Welcome</Animated.Text>
+            <Animated.Text style={styles.txt} entering={BounceInUp.delay(100).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
             </Animated.View>
 
 
-            <Link href={'/health'} asChild>
+            <Link href={'/(sliders)'} asChild>
                 <Pressable>
                     <Animated.View style={styles.titleContainer} entering={FadeInDown.delay(200).duration(2000)}>
                     <Animated.Text style={styles.title}>Let's Start</Animated.Text>
                     </Animated.View>
                     <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
                 </Pressable>
-            </Link> */}
+            </Link>
         </View>
     )
 }
@@ -134,7 +118,7 @@ const styles = StyleSheet.create({
     },
     txt:{
         color:'black',
-        fontSize:16,
+        fontSize:18,
         textAlign:'center'
     },
     weltxt:{

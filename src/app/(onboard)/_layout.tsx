@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { UserDetailProvider } from '../context/UserDetailContext';
 
 
 function OnboardLayout(){
@@ -17,8 +18,9 @@ function OnboardLayout(){
             <Stack.Screen name="ageselect" options={{headerShown: false}}/>
             <Stack.Screen name="dashboard" options={{headerShown: false}}/>
             <Stack.Screen name="preference" options={{headerShown: false}}/>
+            <Stack.Screen name="allergens" options={{headerShown: false}}/>
             <Stack.Screen name="profilePicker" options={{headerShown: false}}/>
-        </Stack>  
+        </Stack> 
     )
 }
 

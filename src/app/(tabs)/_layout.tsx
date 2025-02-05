@@ -47,10 +47,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name='plans'
+        name="foodlog"
+        options={{
+          headerShown:false,
+          title: 'logs',
+          tabBarIcon: ({ color }) => <Ionicons name="create-outline" size={24} color={color} />,//<TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name='mealplan'
         options={{
           title:'plans',
-          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color={color} />
+          tabBarIcon: ({ color }) => <AntDesign name="profile" size={24} color={color} />,
+          headerShown:false
         }}
       />
       <Tabs.Screen

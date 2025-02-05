@@ -28,8 +28,8 @@ const SecondScreen = () => {
 
             <Animated.View 
             style={styles.shapeone}>
-                <Animated.Text style={styles.weltxt} entering={BounceInRight.delay(100).duration(2000)}>Welcome</Animated.Text>
-                <Animated.Text style={styles.txt} entering={BounceInRight.delay(200).duration(2000)}>Your Personalized Wellness Companion along your journey</Animated.Text>
+                <Animated.Text style={styles.weltxt} entering={BounceInRight.delay(100).duration(2000)}>Relax</Animated.Text>
+                <Animated.Text style={styles.txt} entering={BounceInRight.delay(200).duration(2000)}>Unwind, recharge, and find your calm—WellMate helps you embrace relaxation for a balanced life!</Animated.Text>
             </Animated.View>
 
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import { Link, useNavigation } from 'expo-router';
 import { useRegistrationContext } from '../context/RegistrationContext';
+
 
 const ActivityLevelScreen = () => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -20,6 +21,11 @@ const ActivityLevelScreen = () => {
   ];
 
   return (
+    // <ScrollView
+    //   style={{
+    //     flex:1
+    //   }}
+    // >
     <View style={styles.container}>
       <Text style={styles.title}>Activity Level</Text>
       <Text style={styles.subtitle}>What is your baseline activity level?</Text>
@@ -52,6 +58,7 @@ const ActivityLevelScreen = () => {
         <Text style={styles.nextButtonText}>Next</Text>
       </TouchableOpacity>
     </View>
+    // </ScrollView>
   );
 };
 
