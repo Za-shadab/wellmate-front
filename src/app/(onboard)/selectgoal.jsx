@@ -58,7 +58,7 @@ const GoalsScreen = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Goals</Text>
-          <Progressbar cone={1} ctwo={0} cthree={0} cfour={0} cfive={0} csix={0} />
+          {/* <Progressbar cone={1} ctwo={0} cthree={0} cfour={0} cfive={0} csix={0} /> */}
           <Text style={styles.subtitle}>
             Select up to 3 goals that are important to you
             {selectedGoals.length > 0 && ` (${selectedGoals.length} selected)`}.
@@ -101,6 +101,13 @@ const GoalsScreen = () => {
           onPress={() => {
             updateRegistrationData('goals', selectedGoals);
             navigation.navigate('ageselect');
+            selectedGoals.map((s)=>{
+              if (selectedGoals.some(goal => goal === 'Lose Weight' || goal === 'Gain Weight')) {
+                navigation.navigate('selectweight');
+              } else {
+                navigation.navigate('activitylevel');
+              }
+            })
           }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
@@ -113,7 +120,7 @@ const GoalsScreen = () => {
 const styles = StyleSheet.create({
   outercontainer: {
     flex: 1,
-    // marginTop: '8%',
+    marginTop: '8%',
     backgroundColor: '#F7F8FA',
   },
   container: {

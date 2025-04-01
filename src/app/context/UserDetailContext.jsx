@@ -11,6 +11,8 @@ export const UserDetailProvider = ({ children }) => {
   const [userDetail, setUserDetail] = useState({
     userId: '',
     regularId: '',
+    profileUrl: '',
+    name:'',
   });
 
   // Load user details from AsyncStorage

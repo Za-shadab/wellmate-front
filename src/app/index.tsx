@@ -11,13 +11,16 @@ import { date } from 'yup';
 
 const Onboard = () => {
     const[isLoggedIn, setisLoggedIn] = useState<string | null>(null)
+    const[userType, setUserType] = useState<string | null>(null)
     const navigation = useNavigation();
     const screenwidth = Dimensions.get('window').width;
 
     async function getData(){
     const data = await AsyncStorage.getItem('isLoggedIn');
-    console.log('In _layout.tsx',data);
+    const usertype = await AsyncStorage.getItem('userType');
+    console.log('In _layout.tsx',data,usertype);
     setisLoggedIn(data)
+    setUserType(usertype)
     }   
     
     useEffect(()=>{
@@ -27,11 +30,15 @@ const Onboard = () => {
     
     useEffect(()=>{
         if(isLoggedIn !== null && navigation){
-            console.log("hello");
-            if(isLoggedIn === 'true'){
-                console.log("Inside Loggein");
+            if(isLoggedIn === 'true' && userType === 'nutritionist'){
+                navigation.dispatch(StackActions.replace('(nutritionist)'))
+                console.log("hello nutritionist");
+            }if(isLoggedIn === 'true' && userType === 'regularuser'){
                 navigation.dispatch(StackActions.replace('(tabs)'))
-                // navigation.dispatch(StackActions.replace('(onboard)'))
+                console.log("hello user");
+            }if(isLoggedIn === 'true' && userType === 'clientuser'){
+                navigation.dispatch(StackActions.replace('(client)'))
+                console.log("hello client");
             }
         }
     },[isLoggedIn])
@@ -66,7 +73,7 @@ const Onboard = () => {
             <Link href={'/(sliders)'} asChild>
                 <Pressable>
                     <Animated.View style={styles.titleContainer} entering={FadeInDown.delay(200).duration(2000)}>
-                    <Animated.Text style={styles.title}>Let's Start</Animated.Text>
+                    <Animated.Text style={styles.title}>Eat Healthy</Animated.Text>
                     </Animated.View>
                     <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
                 </Pressable>

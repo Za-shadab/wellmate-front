@@ -22,12 +22,20 @@ export const RegistrationProvider = ({ children }) => {
     age:'',
     height:'',
     weight:'',
+    Goalweight:'',
+    weightchangeRate:'',
     activityLevel:'',
     dietType:'',
     allergens:'',
     // restrictedIngredients:'',
     profileUrl:'',
-    // Add more fields as needed
+    healthConditions:[],
+    diabetesMeds:'',
+    insulinUse:'',
+    pcosMeds:'',
+    thyroidType:'',
+    tshLevels:'',
+    permissions:{},
   });
 
   // Function to update registration data

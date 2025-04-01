@@ -1,9 +1,18 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/Feather"; // Import Feather icons
+import React, { useState, useCallback } from "react";
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  TouchableOpacity, 
+  StyleSheet,
+  SafeAreaView,
+  TextInput,
+  Animated,
+  StatusBar
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useRegistrationContext } from "../context/RegistrationContext";
 import { useNavigation } from "expo-router";
-
 
 const allergies = [
   { name: "Celery-free", desc: "Avoids celery and celery-based products." },
@@ -26,16 +35,39 @@ const allergies = [
 
 const AllergySelection = ({ navigation }) => {
   const [selectedAllergies, setSelectedAllergies] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const { registrationData, updateRegistrationData } = useRegistrationContext({});
   const navigationNext = useNavigation();
+  const [scaleAnim] = useState(new Animated.Value(1));
 
-  const toggleSelection = (allergy) => {
+  // Filter allergies based on search query
+  const filteredAllergies = allergies.filter(
+    (allergy) => 
+      allergy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      allergy.desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const toggleSelection = useCallback((allergy) => {
+    // Animate the scale when toggling
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     setSelectedAllergies((prev) =>
       prev.includes(allergy)
         ? prev.filter((item) => item !== allergy)
         : [...prev, allergy]
     );
-  };
+  }, [scaleAnim]);
 
   const handleNext = () => {
     console.log("Selected Allergies:", selectedAllergies);
@@ -43,105 +75,260 @@ const AllergySelection = ({ navigation }) => {
     navigationNext.navigate('profilePicker');
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Select Your Allergies</Text>
-      <FlatList
-        data={allergies}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => toggleSelection(item.name)} style={styles.item}>
-            <View style={styles.checkboxContainer}>
-              <View
-                style={[
-                  styles.checkbox,
-                  selectedAllergies.includes(item.name) && styles.checkboxSelected,
-                ]}
-              >
-                {selectedAllergies.includes(item.name) && (
-                  <Icon name="check" size={16} color="#fff" />
-                )}
-              </View>
-              <View>
-                <Text style={styles.allergyName}>{item.name}</Text>
-                <Text style={styles.allergyDesc}>{item.desc}</Text>
-              </View>
+  const clearAllSelections = () => {
+    setSelectedAllergies([]);
+  };
+
+  const selectAllAllergies = () => {
+    setSelectedAllergies(allergies.map(item => item.name));
+  };
+
+  const renderItem = ({ item }) => {
+    const isSelected = selectedAllergies.includes(item.name);
+    
+    return (
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <TouchableOpacity 
+          onPress={() => toggleSelection(item.name)} 
+          style={[styles.item, isSelected && styles.selectedItem]}
+          activeOpacity={0.7}
+          accessible={true}
+          accessibilityLabel={`${item.name}. ${item.desc}`}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: isSelected }}
+        >
+          <View style={styles.checkboxContainer}>
+            <View
+              style={[
+                styles.checkbox,
+                isSelected && styles.checkboxSelected,
+              ]}
+            >
+              {isSelected && (
+                <Icon name="check" size={16} color="#fff" />
+              )}
             </View>
-          </TouchableOpacity>
-        )}
-      />
-      {/* Next Button */}
-      <TouchableOpacity
-        style={[styles.nextButton, selectedAllergies.length === 0 && styles.disabledButton]}
-        onPress={handleNext}
-        disabled={selectedAllergies.length === 0}
-      >
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-    </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.allergyName}>{item.name}</Text>
+              <Text style={styles.allergyDesc}>{item.desc}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Select Your Allergies</Text>
+          <Text style={styles.subheader}>
+            We'll customize your meal recommendations based on your selections
+          </Text>
+        </View>
+
+        <View style={styles.searchContainer}>
+          <Icon name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search allergies..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#999"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <Icon name="x" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.selectionControls}>
+          <Text style={styles.selectedCount}>
+            {selectedAllergies.length} selected
+          </Text>
+          <View style={styles.controlButtons}>
+            <TouchableOpacity onPress={clearAllSelections} style={styles.controlButton}>
+              <Text style={styles.controlButtonText}>Clear All</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={selectAllAllergies} style={styles.controlButton}>
+              <Text style={styles.controlButtonText}>Select All</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <FlatList
+          data={filteredAllergies}
+          keyExtractor={(item) => item.name}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        />
+
+        <TouchableOpacity
+          style={[styles.nextButton, selectedAllergies.length === 0 && styles.disabledButton]}
+          onPress={handleNext}
+          disabled={selectedAllergies.length === 0}
+          activeOpacity={0.8}
+          accessible={true}
+          accessibilityLabel="Continue to next step"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: selectedAllergies.length === 0 }}
+        >
+          <Text style={styles.nextButtonText}>Continue</Text>
+          <Icon name="arrow-right" size={20} color="#fff" style={styles.nextButtonIcon} />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f7f7f7",
+  },
+  headerContainer: {
+    marginBottom: 20,
   },
   header: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 15,
+    color: "#333",
+    marginBottom: 8,
+  },
+  subheader: {
+    fontSize: 16,
+    color: "#666",
+    lineHeight: 22,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    height: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
     color: "#333",
   },
+  selectionControls: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  selectedCount: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#555",
+  },
+  controlButtons: {
+    flexDirection: "row",
+  },
+  controlButton: {
+    marginLeft: 15,
+  },
+  controlButtonText: {
+    color: "#007AFF",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  listContent: {
+    paddingBottom: 20,
+  },
   item: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  selectedItem: {
+    backgroundColor: "#f0f7ff",
+    borderColor: "#007AFF",
+    borderWidth: 1,
   },
   checkboxContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   checkbox: {
     width: 28,
     height: 28,
-    borderRadius: 6,
+    borderRadius: 8,
     borderWidth: 2,
     borderColor: "#ccc",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
+    marginRight: 15,
     backgroundColor: "#fff",
   },
   checkboxSelected: {
     backgroundColor: "#007AFF",
     borderColor: "#007AFF",
   },
+  textContainer: {
+    flex: 1,
+  },
   allergyName: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 17,
+    fontWeight: "600",
     color: "#333",
+    marginBottom: 4,
   },
   allergyDesc: {
-    fontSize: 13,
+    fontSize: 14,
     color: "#666",
+    lineHeight: 20,
   },
   nextButton: {
-    marginTop: 20,
-    backgroundColor: "#007AFF",
-    paddingVertical: 12,
-    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#007AFF",
+    paddingVertical: 16,
+    borderRadius: 12,
+    shadowColor: "#007AFF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   disabledButton: {
     backgroundColor: "#ccc",
+    shadowOpacity: 0,
   },
   nextButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "600",
     color: "#fff",
   },
-};
+  nextButtonIcon: {
+    marginLeft: 8,
+  },
+});
 
 export default AllergySelection;

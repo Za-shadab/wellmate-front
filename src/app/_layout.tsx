@@ -11,7 +11,11 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import { boolean } from 'yup';
 import { RegistrationProvider } from './context/RegistrationContext';
 import { UserDetailProvider } from './context/UserDetailContext';
-
+import {NutritionistDetailProvider} from './context/NutritionistContext';
+import {ClientUserProvider} from './context/ClientUserContext';
+import { ClientRegistrationProvider } from './context/ClientRegistration';
+import {SavedPlanProvider} from '@/src/app/context/savedPlanContext'
+import { MealPlanProvider } from './context/MealPlanContext';
 
 
 export {
@@ -57,16 +61,32 @@ function RootLayoutNav() {
   return (
     <RegistrationProvider>
     <UserDetailProvider>
+    <NutritionistDetailProvider>
+    <ClientUserProvider>
+    <ClientRegistrationProvider>
+    <SavedPlanProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <MealPlanProvider>
       <Stack>
         <Stack.Screen name="index" options={{headerShown: false}}/>
         <Stack.Screen name="(sliders)" options={{headerShown: false}}/>
         <Stack.Screen name="(auth)" options={{headerShown: false}}/>
         <Stack.Screen name="(onboard)" options={{headerShown: false}}/>
+        <Stack.Screen name="(nutrionboard)" options={{headerShown: false}}/>
+        <Stack.Screen name="(nutritionist)" options={{headerShown: false}}/>
+        <Stack.Screen name="(clientonboard)" options={{headerShown: false}}/>
+        <Stack.Screen name="(nutritionclient)" options={{headerShown: false}}/>
+        <Stack.Screen name="(clientProfile)" options={{headerShown: false}}/>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(client)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
+      </MealPlanProvider>
     </ThemeProvider>
+    </SavedPlanProvider>
+    </ClientRegistrationProvider>
+    </ClientUserProvider>
+    </NutritionistDetailProvider>
     </UserDetailProvider>
     </RegistrationProvider>
   );

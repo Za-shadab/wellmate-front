@@ -22,7 +22,7 @@ type RingProgressProps = {
 // const color = "#EE0F55";
 // const color = "#E65100";
 
-const RingProgress = ({radius = 120, strokeWidth = 18, progress = 0.5, value, color="#E65100", icon, iconHeight, labelSize=10, icontop=4.5, labeltop=8}: RingProgressProps) => {
+const RingProgress = ({radius = 120, strokeWidth = 18, progress = 0.5, value, color="#E65100", icon, iconHeight=10, labelSize=10, icontop=4.5, labeltop=8}: RingProgressProps) => {
   const innerRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * innerRadius;
 

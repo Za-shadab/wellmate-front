@@ -1,89 +1,131 @@
-import { useState } from 'react';
-import { Image, View, StyleSheet, Pressable, Text, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  Image, 
+  View, 
+  StyleSheet, 
+  Pressable, 
+  Text, 
+  ActivityIndicator, 
+  Animated, 
+  Dimensions,
+  SafeAreaView,
+  StatusBar
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useRegistrationContext } from '../context/RegistrationContext';
 import { useuserDetailContext } from '../context/UserDetailContext';
 import { useNavigation } from 'expo-router';
+import { URL } from '../../constants/url';
+import { Ionicons } from '@expo/vector-icons';
+
+
+
+
+
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
-  const {registrationData, updateRegistrationData} = useRegistrationContext({});
-  const {userDetail, updateUserDetail} = useuserDetailContext({});
+  const { registrationData, updateRegistrationData } = useRegistrationContext();
+  const { userDetail, updateUserDetail } = useuserDetailContext();
   const [status, setstatus] = useState(false);
-  console.log("user detail......................", userDetail);
-  
+  const [loading, setLoading] = useState(false); // Loader state
   const navigation = useNavigation();
-  
+
   const pickImage = async () => {
-    console.log('Button Pressed'); // Check if the function is being called
+    console.log('Button Pressed');
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['videos','images'],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-      // base64: true,
     });
-  
+
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-
-      updateRegistrationData('profileUrl', result.assets[0].uri)
-      const formData = new FormData();
-      formData.append('file', {
-        uri: result.assets[0].uri,
-        type: result.assets[0].uri.endsWith('.png') ? 'image/png' : 'image/jpeg',  // Dynamically set type
-        name: `profile_image.${result.assets[0].uri.split('.').pop()}`,  // Customize the name as per your need
-      });
-  
-  
-    (async () => {
-      try{
-        const response = await axios.post('http://192.168.0.113:3000/pfupload/profileUpload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-        console.log('Server response is:', response.data.url);
-
-        const data = {
-          userId : userDetail.userId,
-          age : registrationData.age,
-          height : registrationData.height,
-          weight : registrationData.weight,
-          gender: registrationData.gender,
-          activityLevel : registrationData.activityLevel,
-          goals : registrationData.goals,
-          profileUrl : response.data.url
-        };
-
-        
-        const response2 = await axios.post('http://192.168.0.140:3000/regular/regularUsers', data)
-        console.log('Servers Second response is:', response2);
-        setstatus(true)
-        await updateUserDetail('regularId', response2.data.regularUserId)
-        const data2 = {
-          regularUserId: userDetail.regularId,
-          allergens: registrationData.allergens,
-          dietType: registrationData.dietType
-        }
-
-        const response3 = await axios.post('http://192.168.0.113://3000/preference/dietary-preferences', data2)
-        console.log("server third response is: ", response3);
-        
-      }catch(err){
-        console.log('error sending data',err.message);
-      }
-    })()
-
-    }else{
-      Alert.alert("Image selection was canceled.");
+      const uri = result.assets[0].uri;
+      setImage(uri);
+      updateRegistrationData('profileUrl', uri);
     }
   };
 
+  const submitInfo = async () => {
+    try {
+      if (!image) {
+        console.log("No image selected!");
+        return;
+      }
 
-const handleFinish = ()=>{
-    console.log("Profile photo update finish");
-    navigation.navigate('(tabs)')
-}
+      setLoading(true); // Start loading
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: image,
+        type: 'image/jpeg',
+        name: `profile_image.jpg`,
+      });
+
+      const response = await axios.post(
+        `${URL}/pfupload/profileUpload`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      console.log('Server response:', response.data.url);
+
+      const data = {
+        UserId: userDetail.userId,
+        age: registrationData.age,
+        height: registrationData.height,
+        weight: registrationData.weight,
+        gender: registrationData.gender,
+        activityLevel: registrationData.activityLevel,
+        goals: registrationData.goals,
+        profileUrl: response.data.url,
+        goalWeight: registrationData.Goalweight !== undefined ? registrationData.Goalweight : null,
+        weightchangeRate: registrationData.weightchangeRate !== undefined ? registrationData.weightchangeRate : null
+      };
+      console.log(data);
+      
+      const response2 = await axios.post(
+        `${URL}/regular/regularUsers`,
+        data
+      );
+      console.log(response2);
+      
+      console.log('Second response:', response2.data);
+
+      updateUserDetail('regularId', response2.data._id);
+      updateUserDetail('profileUrl', response.data.url);
+      updateUserDetail('name', registrationData.name)
+
+      const data2 = {
+        regularUserId: response2.data._id, // Now using updated value
+        allergens: registrationData.allergens,
+        dietType: registrationData.dietType,
+      };
+      console.log("Sending dietary preferences:", data2);
+
+      const response3 = await axios.post(
+        `${URL}/preference/dietary-preferences`,
+        data2
+      );
+      console.log("Third response:", response3);
+
+      setstatus(true);
+      console.log("Registration completed!");
+
+    } catch (err) {
+      console.log('Error sending data:', err.response);
+    } finally {
+      setLoading(false); // Stop loading after completion
+    }
+  };
+
+  useEffect(() => {
+    if (status) {
+      console.log("Navigating to (tabs)");
+      navigation.navigate('(tabs)');
+    }
+  }, [status]);
 
   return (
     <View style={styles.container}>
@@ -92,22 +134,13 @@ const handleFinish = ()=>{
 
       <View style={styles.imgContainer}>
         {image ? (
-          <Image
-            source={{ uri: image }}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
         ) : (
           <Text style={styles.placeholderText}>No Image Selected</Text>
         )}
       </View>
 
-      <Pressable 
-        style={styles.button} 
-        onPress={pickImage}
-        onPressIn={() => console.log('Button Press In')}
-        onPressOut={() => console.log('Button Press Out')}
-      >
+      <Pressable style={styles.button} onPress={pickImage}>
         <Text style={styles.btnText}>+</Text>
       </Pressable>
 
@@ -115,10 +148,18 @@ const handleFinish = ()=>{
         Tap the button to select your profile picture from your device's gallery.
       </Text>
 
-
-      <Pressable style={styles.finishButton} onPress={handleFinish}>
-        <Text style={styles.finishButtonText}>Finish</Text>
-      </Pressable>  
+      {loading ? (
+        <ActivityIndicator size="large" color="#1e90ff" style={styles.loader} />
+      ) : (
+        <Pressable
+          style={styles.finishButton}
+          onPress={async () => {
+          await submitInfo();  // Wait for submitInfo to complete
+          }}
+        >
+          <Text style={styles.finishButtonText}>Finish</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -193,7 +234,7 @@ const styles = StyleSheet.create({
   finishButton: {
     width: 200,
     height: 50,
-    backgroundColor: '#4CAF50',  // Green color
+    backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25,
@@ -203,5 +244,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  loader: {
+    marginTop: 20,
   },
 });

@@ -11,15 +11,16 @@ import { UserDetailProvider } from '../context/UserDetailContext';
 function OnboardLayout(){
     return(
         <Stack
-            initialRouteName='selectgoal'
+            initialRouteName='ageselect'
         >
-            <Stack.Screen name="selectgoal" options={{headerShown: false}}/>
-            <Stack.Screen name="activitylevel" options={{headerShown: false}}/>
             <Stack.Screen name="ageselect" options={{headerShown: false}}/>
-            <Stack.Screen name="dashboard" options={{headerShown: false}}/>
+            <Stack.Screen name="selectgoal" options={{headerShown: false}}/>
+            <Stack.Screen name="selectweight" options={{headerShown: false}}/>
+            <Stack.Screen name="activitylevel" options={{headerShown: false}}/>
             <Stack.Screen name="preference" options={{headerShown: false}}/>
             <Stack.Screen name="allergens" options={{headerShown: false}}/>
             <Stack.Screen name="profilePicker" options={{headerShown: false}}/>
+            <Stack.Screen name="dashboard" options={{headerShown: false}}/>
         </Stack> 
     )
 }

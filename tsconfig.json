@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/app/(auth)/login.jsx", "src/app/index.tsx", "src/app/(onboard)/selectgoal.jsx", "src/components/caloriesBurn.jsx", "src/app/(sliders)/_layout.tsx", "src/app/(tabs)/index.jsx", "src/app/(tabs)/mealplan/index.jsx"  ]
+, "src/app/(auth)/login.jsx", "src/app/index.tsx", "src/app/(onboard)/selectgoal.jsx", "src/components/caloriesBurn.jsx", "src/app/(sliders)/_layout.tsx", "src/app/(tabs)/index.jsx", "src/app/(tabs)/mealplan/index.jsx", "src/app/(tabs)/_layout.tsx", "src/app/(nutrionboard)/branding.jsx", "src/app/(nutrionboard)/carousal.jsx", "src/app/(nutritionist)/dashboard/clmanagement.jsx", "src/app/(tabs)/Profile/index.jsx", "src/app/(tabs)/two.jsx", "src/app/(nutritionist)/savedplanner/savedplans.jsx"  ]
 }
